@@ -2,7 +2,7 @@
 
 # Start controller
 echo "Starting Controller"
-python3 -m fastchat.serve.controller --host 0.0.0.0 --port 21001&
+python3 -m fastchat.serve.controller --host 0.0.0.0 --port 21001 &
 #Wait till it's up
 sleep 5
 # Then, launch the model worker(s)
