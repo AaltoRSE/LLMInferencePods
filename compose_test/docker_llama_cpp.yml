@@ -1,0 +1,27 @@
+version: "3.9"
+services:
+  backend:
+    build:
+      dockerfile: ../llama-cpp-python/Dockerfile
+      context: ../llama-cpp-python
+    environment:
+      - HOST=0.0.0.0
+      - PORT=8000
+      - MODEL=llama/llama-2-7b-chat.gguf.q4_0.bin
+    container_name: inference-server
+    volumes:
+      - /home/thomas/Work/LLMs/:/models
+  nginx:
+    build:
+      dockerfile: ../nginxPod/Dockerfile
+      context: ../nginxPod
+    container_name: nginx
+    environment:
+      - LLM_MODEL=llama-2
+      - AUTH_TOKEN=123
+    ports:
+      - 127.0.0.1:80:80
+
+networks:
+  default:
+    name: inference-network

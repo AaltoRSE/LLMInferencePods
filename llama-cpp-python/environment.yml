@@ -1,0 +1,11 @@
+name: llama_cpp
+channels:
+  - conda-forge
+  - pytorch
+dependencies:
+  - gcc
+  - gxx
+  - python=3.9
+  - pip
+  - pip:
+      - llama-cpp-python[server]
