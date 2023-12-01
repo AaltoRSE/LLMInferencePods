@@ -1,0 +1,189 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: modelconf
+  namespace: rse
+data:
+  HOST: "0.0.0.0"
+  PORT: "8000"
+  MODEL: /llama-2-7b-chat.gguf.q4_0.bin
+  # Needs to be altered later, probably put into a secret, but for now, we'll put it here, since podman doesn't do this (for all I know)
+  KEY: "123"
+
+---
+# The ingress says "please HTTP proxy PATH on HOSTNAME to the
+# respective service I am specifying."
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: llm-ingress
+  namespace:
+    rse # Everything we do will be in the "rse" namespace,
+    # which logically separates different uses (like with
+    # permissions, resource limits, etc).  Everything
+    # below is in the rse namespace.
+  annotations:
+    # The line below magically gives us letsencrypt certificates for
+    # our service!  This is for the CSIT cluster, other clusters may
+    # be different.
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    # We can define various things declaratively... this tells the
+    # maximum HTTP body size to the ingress.
+    # TODO: Might need to adapt this...
+    nginx.ingress.kubernetes.io/proxy-body-size: 20m
+# Spec tells the actual parameters: hosts to listen on, path prefixes.
+spec:
+  tls:
+    - hosts:
+        - llm.k8s-test.cs.aalto.fi
+      secretName: llm-fastchat-deployment
+  rules:
+    - host: llm.k8s-test.cs.aalto.fi
+      http:
+        paths:
+          - path: /llama2
+            pathType: Prefix
+            # To where do we send these incoming requests?  This
+            # defines the target of these requests, and corresponds to
+            # the service defined below (matching the name).
+            backend:
+              service:
+                name: llm-lama2-svc
+                port:
+                  number: 80
+          - path: /llama2-chat
+            pathType: Prefix
+            # To where do we send these incoming requests?  This
+            # defines the target of these requests, and corresponds to
+            # the service defined below (matching the name).
+            backend:
+              service:
+                name: llm-lama2-chat-svc
+                port:
+                  number: 80
+---
+# A service defines a network target, basically: you could think of it
+# as a load-balanced internal DNS of some sort (it's more fancy since
+# it has ports and stuff like that).
+#
+# This service points (the "selector") to the app with a certain name
+# (defined below).
+apiVersion: v1
+kind: Service
+metadata:
+  name: llm-lama2-svc
+  namespace: rse
+  labels:
+    app.kubernetes.io/name: llm-lama2-svc
+    app.kubernetes.io/component: server
+spec:
+  # type: inference server
+  # What ports and stuff does this service have?
+  ports:
+    - name: http
+      port: 80
+      targetPort: 80
+      protocol: TCP
+  # This defines where incoming connections are routed to: app of a
+  # certain name, defined below.
+  selector:
+    app.kubernetes.io/name: llm-lama2
+#    app.kubernetes.io/component: server
+---
+# This is the actual application: actually it's a **deployment**,
+# which means:
+#   - Define a container that runs
+#   - It can run multiple copies of this in parellel
+#   - Keeps them in sync, scale up and down as needed, etc.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: llm-lama2
+  namespace: rse
+  labels:
+    app.kubernetes.io/name: llm-lama2
+    app.kubernetes.io/component: server
+# The definition of the service itself
+spec:
+  # Test with one replica
+  replicas: 1
+  # This is how the deployment knows which pods are part of it.  These
+  # labels should match the template labels.
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: llm-lama2
+      app.kubernetes.io/component: server
+  # The template is used to make each pod of the deployment - as many
+  # as needed to match spec.replicas.
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: llm-lama2
+        app.kubernetes.io/component: server
+    # You can probably figure out what most of these mean...
+    spec:
+      # Use specific host only
+      nodeSelector:
+        kubernetes.io/hostname: k8s-node21.cs.aalto.fi
+      restartPolicy: Always
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+      volumes:
+        - name: llm-models
+          hostPath:
+            path: /srv/models/
+            type: Directory
+
+      containers:
+        - name: llm-llama2-cont
+          image: harbor.cs.aalto.fi/aaltorse-public/llm_llama2:latest
+          #imagePullPolicy: Always
+          ports:
+            - containerPort: 8000
+          # This defines environment variables inside the container.
+          # This one is from a **secret**, which can be used to
+          # logically separate secrets from config.
+          #
+          # `ConfigMaps` can alse be useful: you can set environment
+          # variables or even dynamically mount config files inside of
+          # the container.
+          env:
+            - name: MODEL
+              value: "llama-2-7b-chat.gguf.q4_0.bin"
+            - name: HOST
+              value: "0.0.0.0"
+            - name: PORT
+              value: "8000"
+          volumeMounts:
+            - mountPath: /models
+              name: llm-models
+              readOnly: true
+          #env:
+          # created with: kubectl -n rse create secret generic scicomp-docs-search-update --from-literal=token=TOKEN
+          # - name: SEARCH_UPDATE_AUTHORIZATION
+          #   valueFrom:
+          #     secretKeyRef:
+          #       name: scicomp-docs-search-update
+          #       key: token
+        - name: llm-nginx-cont
+          image: harbor.cs.aalto.fi/aaltorse-public/llm_nginx:latest
+          ports:
+            - containerPort: 80
+          env:
+            - name: LLM_MODEL
+              value: "llama-2"
+            - name: AUTH_TOKEN
+              value: "123"
+          securityContext:
+            runAsUser: 0
+            runAsGroup: 0
+            allowPrivilegeEscalation: false
+      # Since the image is private, we need permission to pull it.  I
+      # somehow got this from harbor config.  (AaltoRSE people can
+      # probably re-use this existing secret).
+      #
+      # created with: `kubectl -n rse create secret docker-registry robot-scicomp-docs-search-pull --docker-server=DOMAIN --docker-username='robot$NAME' --docker-password='SECRET'`
+      # imagePullSecrets:
+      #  - name: robot-scicomp-docs-search-pull
