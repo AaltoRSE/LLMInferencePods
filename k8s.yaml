@@ -31,6 +31,9 @@ metadata:
     # maximum HTTP body size to the ingress.
     # TODO: Might need to adapt this...
     nginx.ingress.kubernetes.io/proxy-body-size: 20m
+    # Rewrite request for target pod
+    nginx.ingress.kubernetes.io/use-regex: "true"
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
 # Spec tells the actual parameters: hosts to listen on, path prefixes.
 spec:
   tls:
@@ -41,7 +44,7 @@ spec:
     - host: llm.k8s-test.cs.aalto.fi
       http:
         paths:
-          - path: /llama2
+          - path: /llama2(/|$)(.*)
             pathType: Prefix
             # To where do we send these incoming requests?  This
             # defines the target of these requests, and corresponds to
@@ -51,7 +54,7 @@ spec:
                 name: llm-lama2-svc
                 port:
                   number: 80
-          - path: /llama2-chat
+          - path: /llama2-chat(/|$)(.*)
             pathType: Prefix
             # To where do we send these incoming requests?  This
             # defines the target of these requests, and corresponds to
