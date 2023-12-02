@@ -31,6 +31,8 @@ metadata:
     # maximum HTTP body size to the ingress.
     # TODO: Might need to adapt this...
     nginx.ingress.kubernetes.io/proxy-body-size: 20m
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "300"
     # Rewrite request for target pod
     nginx.ingress.kubernetes.io/use-regex: "true"
     nginx.ingress.kubernetes.io/rewrite-target: /$2
