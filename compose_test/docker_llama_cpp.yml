@@ -11,6 +11,10 @@ services:
     container_name: inference-server
     volumes:
       - /home/thomas/Work/LLMs/:/models
+    ports:
+      - 127.0.0.1:8000:8000
+    network_mode: "host"
+
   nginx:
     build:
       dockerfile: ../nginxPod/Dockerfile
@@ -20,8 +24,8 @@ services:
       - LLM_MODEL=llama-2
       - AUTH_TOKEN=123
     ports:
-      - 127.0.0.1:80:80
-
+      - 127.0.0.1:4000:80
+    network_mode: "host"
 networks:
   default:
     name: inference-network
