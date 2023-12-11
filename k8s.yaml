@@ -1,15 +1,3 @@
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: modelconf
-  namespace: rse
-data:
-  HOST: "0.0.0.0"
-  PORT: "8000"
-  MODEL: /llama-2-7b-chat.gguf.q4_0.bin
-  # Needs to be altered later, probably put into a secret, but for now, we'll put it here, since podman doesn't do this (for all I know)
-  KEY: "123"
-
 ---
 # The ingress says "please HTTP proxy PATH on HOSTNAME to the
 # respective service I am specifying."
@@ -179,8 +167,12 @@ spec:
           env:
             - name: LLM_MODEL
               value: "llama-2"
-            - name: AUTH_TOKEN
-              value: "123"
+            - {
+                name: AUTH_TOKEN,
+                valueFrom:
+                  { secretKeyRef: { name: llm-gateway, key: inference_key } },
+              }
+
           securityContext:
             runAsUser: 0
             runAsGroup: 0
