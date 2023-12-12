@@ -1,0 +1,52 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: llm-ingress
+  namespace: rse # Everything we do will be in the "rse" namespace,
+    # which logically separates different uses (like with
+    # permissions, resource limits, etc).  Everything
+    # below is in the rse namespace.
+  annotations:
+    # The line below magically gives us letsencrypt certificates for
+    # our service!  This is for the CSIT cluster, other clusters may
+    # be different.
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    # We can define various things declaratively... this tells the
+    # maximum HTTP body size to the ingress.
+    # TODO: Might need to adapt this...
+    nginx.ingress.kubernetes.io/proxy-body-size: 20m
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "300"
+    # Rewrite request for target pod
+    nginx.ingress.kubernetes.io/use-regex: "true"
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+# Spec tells the actual parameters: hosts to listen on, path prefixes.
+spec:
+  tls:
+    - hosts:
+        - llm.k8s-test.cs.aalto.fi
+      secretName: llm-fastchat-deployment
+  rules:
+    - host: llm.k8s-test.cs.aalto.fi
+      http:
+        paths:
+          - path: /{{ .Values.modelName }}(/|$)(.*)
+            pathType: Prefix
+            # To where do we send these incoming requests?  This
+            # defines the target of these requests, and corresponds to
+            # the service defined below (matching the name).
+            backend:
+              service:
+                name: llm-{{ .Values.modelName }}-svc
+                port:
+                  number: 80
+          - path: /{{ .Values.modelName }}-chat(/|$)(.*)
+            pathType: Prefix
+            # To where do we send these incoming requests?  This
+            # defines the target of these requests, and corresponds to
+            # the service defined below (matching the name).
+            backend:
+              service:
+                name: llm-{{ .Values.modelName }}-chat-svc
+                port:
+                  number: 80
