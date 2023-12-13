@@ -7,9 +7,12 @@ RUN apt-get update && apt-get upgrade -y && apt-get install -y --no-install-reco
     python3-pip \
     ninja-build \
     libopenblas-dev \
-    build-essential
+    build-essential \
+    pkg-config
 
-RUN pip install llama-cpp-python[server]
+RUN pip install mkl
+
+RUN CMAKE_ARGS="-DLLAMA_AVX2=ON -DLLAMA_AVX2=ON -DLLAMA_FMA=ON" FORCE_CMAKE=1 pip install llama-cpp-python[server]
 
 ENV HOST="localhost" \
     PORT="8000" \        
