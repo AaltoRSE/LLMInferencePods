@@ -129,6 +129,9 @@ spec:
           #imagePullPolicy: Always
           ports:
             - containerPort: 8000
+          resources: # Restrict to one GPU
+            limits:
+              nvidia.com/gpu: 1
           # This defines environment variables inside the container.
           # This one is from a **secret**, which can be used to
           # logically separate secrets from config.

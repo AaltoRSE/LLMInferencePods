@@ -3,6 +3,4 @@
 # Start controller
 echo "Starting Server"
 env
-python3 -m llama_cpp.server --host $HOST --model /models/$MODEL --port $PORT --chat_format $CHATFORMAT --n_gpu_layers 35
-
-
+python3 -m llama_cpp.server --n_gpu_layers -1 --host $HOST --model /models/$MODEL --port $PORT --chat_format $CHATFORMAT --n_threads 12
