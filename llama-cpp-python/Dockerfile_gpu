@@ -1,0 +1,22 @@
+# Use the image as specified
+FROM nvidia/cuda:12.1.1-runtime-ubuntu20.04 
+
+# Update and upgrade the existing packages 
+RUN apt-get update && apt-get upgrade -y && apt-get install -y --no-install-recommends \
+    python3 \
+    python3-pip \
+    ninja-build \
+    libopenblas-dev \
+    build-essential
+
+RUN CMAKE_ARGS="-DLLAMA_CUBLAS=on" FORCE_CMAKE=1 pip install llama-cpp-python[server]
+
+ENV HOST="localhost" \
+    PORT="8000" \        
+    CHATFORMAT="chatml"
+
+WORKDIR /app
+
+COPY start_server_gpu.sh /app/entrypoint.sh
+
+ENTRYPOINT ["/app/entrypoint.sh"]

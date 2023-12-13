@@ -4,7 +4,7 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: llm-ingress
+  name: llm-ingress-gpu
   namespace:
     rse # Everything we do will be in the "rse" namespace,
     # which logically separates different uses (like with
@@ -34,24 +34,14 @@ spec:
     - host: llm.k8s-test.cs.aalto.fi
       http:
         paths:
-          - path: /llama2(/|$)(.*)
+          - path: /llama2-gpu(/|$)(.*)
             pathType: Prefix
             # To where do we send these incoming requests?  This
             # defines the target of these requests, and corresponds to
             # the service defined below (matching the name).
             backend:
               service:
-                name: llm-lama2-svc
-                port:
-                  number: 80
-          - path: /llama2-13b-chat(/|$)(.*)
-            pathType: Prefix
-            # To where do we send these incoming requests?  This
-            # defines the target of these requests, and corresponds to
-            # the service defined below (matching the name).
-            backend:
-              service:
-                name: llm-lama2-chat-svc
+                name: llm-lama2-gpu-svc
                 port:
                   number: 80
 ---
@@ -64,10 +54,10 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: llm-lama2-svc
+  name: llm-lama2-gpu-svc
   namespace: rse
   labels:
-    app.kubernetes.io/name: llm-lama2-svc
+    app.kubernetes.io/name: llm-lama2-gpu-svc
     app.kubernetes.io/component: server
 spec:
   # type: inference server
@@ -80,35 +70,7 @@ spec:
   # This defines where incoming connections are routed to: app of a
   # certain name, defined below.
   selector:
-    app.kubernetes.io/name: llm-lama2
-#    app.kubernetes.io/component: server
----
-# A service defines a network target, basically: you could think of it
-# as a load-balanced internal DNS of some sort (it's more fancy since
-# it has ports and stuff like that).
-#
-# This service points (the "selector") to the app with a certain name
-# (defined below).
-apiVersion: v1
-kind: Service
-metadata:
-  name: llm-lama2-chat-svc
-  namespace: rse
-  labels:
-    app.kubernetes.io/name: llm-lama2-chat-svc
-    app.kubernetes.io/component: server
-spec:
-  # type: inference server
-  # What ports and stuff does this service have?
-  ports:
-    - name: http
-      port: 80
-      targetPort: 80
-      protocol: TCP
-  # This defines where incoming connections are routed to: app of a
-  # certain name, defined below.
-  selector:
-    app.kubernetes.io/name: llm-lama2-chat
+    app.kubernetes.io/name: llm-lama2-gpu
 #    app.kubernetes.io/component: server
 ---
 # This is the actual application: actually it's a **deployment**,
@@ -119,10 +81,10 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: llm-lama2
+  name: llm-lama2-gpu
   namespace: rse
   labels:
-    app.kubernetes.io/name: llm-lama2
+    app.kubernetes.io/name: llm-lama2-gpu
     app.kubernetes.io/component: server
 # The definition of the service itself
 spec:
@@ -132,20 +94,24 @@ spec:
   # labels should match the template labels.
   selector:
     matchLabels:
-      app.kubernetes.io/name: llm-lama2
+      app.kubernetes.io/name: llm-lama2-gpu
       app.kubernetes.io/component: server
   # The template is used to make each pod of the deployment - as many
   # as needed to match spec.replicas.
   template:
     metadata:
       labels:
-        app.kubernetes.io/name: llm-lama2
+        app.kubernetes.io/name: llm-lama2-gpu
         app.kubernetes.io/component: server
     # You can probably figure out what most of these mean...
     spec:
       # Use specific host only
+      tolerations:
+        - key: "cs-aalto/gpu"
+          operator: Exists
+          effect: NoSchedule
       nodeSelector:
-        kubernetes.io/hostname: k8s-node21.cs.aalto.fi
+        kubernetes.io/hostname: k8s-gpu.cs.aalto.fi
       restartPolicy: Always
       securityContext:
         runAsUser: 1000
@@ -158,8 +124,8 @@ spec:
             type: Directory
 
       containers:
-        - name: llm-llama2-cont
-          image: harbor.cs.aalto.fi/aaltorse-public/llm_llama2:latest
+        - name: llm-llama2-cont-gpu
+          image: harbor.cs.aalto.fi/aaltorse-public/llm_llama2_gpu:latest
           #imagePullPolicy: Always
           ports:
             - containerPort: 8000
