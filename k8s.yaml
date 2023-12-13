@@ -159,7 +159,7 @@ spec:
 
       containers:
         - name: llm-llama2-cont
-          image: harbor.cs.aalto.fi/aaltorse-public/llm_llama2:latest
+          image: harbor.cs.aalto.fi/aaltorse-public/llm_llama_cpp:latest
           #imagePullPolicy: Always
           ports:
             - containerPort: 8000
@@ -262,7 +262,7 @@ spec:
 
       containers:
         - name: llm-llama2-chat-cont
-          image: harbor.cs.aalto.fi/aaltorse-public/llm_llama2:latest
+          image: harbor.cs.aalto.fi/aaltorse-public/llm_llama_cpp:latest
           #imagePullPolicy: Always
           ports:
             - containerPort: 8000

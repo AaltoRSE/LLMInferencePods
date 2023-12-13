@@ -125,7 +125,7 @@ spec:
 
       containers:
         - name: llm-llama2-cont-gpu
-          image: harbor.cs.aalto.fi/aaltorse-public/llm_llama2_gpu:latest
+          image: harbor.cs.aalto.fi/aaltorse-public/llm_llama_cpp_gpu:latest
           #imagePullPolicy: Always
           ports:
             - containerPort: 8000
