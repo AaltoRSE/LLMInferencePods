@@ -1,5 +1,5 @@
 # Use the image as specified
-FROM nvidia/cuda:12.1.1-runtime-ubuntu20.04 
+FROM nvidia/cuda:12.2.2-devel-ubuntu22.04 
 
 # Update and upgrade the existing packages 
 RUN apt-get update && apt-get upgrade -y && apt-get install -y --no-install-recommends \
@@ -7,7 +7,8 @@ RUN apt-get update && apt-get upgrade -y && apt-get install -y --no-install-reco
     python3-pip \
     ninja-build \
     libopenblas-dev \
-    build-essential
+    build-essential \
+    pkg-config
 
 RUN CMAKE_ARGS="-DLLAMA_CUBLAS=on" FORCE_CMAKE=1 pip install llama-cpp-python[server]
 
