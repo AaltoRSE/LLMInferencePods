@@ -1,0 +1,5 @@
+modelName: ""
+modelPath: ""
+target: "cpu"
+maxreplicas: 1
+cpus: 12

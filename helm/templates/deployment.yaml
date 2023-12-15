@@ -1,10 +1,10 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: llm-{{ .Values.modelName }}
+  name: llm-{{ .Values.modelName }}-{{ .Values.target }}
   namespace: rse
   labels:
-    app.kubernetes.io/name: llm-{{ .Values.modelName }}
+    app.kubernetes.io/name: llm-{{ .Values.modelName }}-{{ .Values.target }}
     app.kubernetes.io/component: server
 # The definition of the service itself
 spec:
@@ -16,11 +16,15 @@ spec:
   template:
     metadata:
       labels:
-        app.kubernetes.io/name: llm-{{ .Values.modelName }}
+        app.kubernetes.io/name: llm-{{ .Values.modelName }}-{{ .Values.target }}
         app.kubernetes.io/component: server
     spec:
       nodeSelector:
-        kubernetes.io/hostname: k8s-node21.cs.aalto.fi
+        kubernetes.io/hostname: {{- if eq .Values.target "gpu" }}  
+                                k8s-node21.cs.aalto.fi 
+                                {{- else }}  
+                                k8s-gpu.cs.aalto.fi
+                                {{- end }}
       restartPolicy: Always
       securityContext:
         runAsUser: 1000
@@ -33,10 +37,19 @@ spec:
             type: Directory
 
       containers:
-        - name: llm-{{ .Values.modelName }}-cont
-          image: harbor.cs.aalto.fi/aaltorse-public/llm_llama2:latest
+        - name: llm-{{ .Values.modelName }}-{{ .Values.target }}-cont
+          image: harbor.cs.aalto.fi/aaltorse-public/llm_llama2-{{ .Values.target }}:latest
           ports:
             - containerPort: 8000
+
+          resources: # Restrict to one GPU
+            requests:              
+              cpu: "250m"
+            limits: # For GPUs, this will block a full GPU for this model (probably shouldn't deploy more than one instance)... 
+              {{- if eq .Values.target "gpu" }}
+              nvidia.com/gpu: 1
+              {{- end}}
+              cpu: {{ .Values.cpus }}
           env:
             - name: MODEL
               value: /models/{{ .Values.modelPath }}
@@ -44,6 +57,8 @@ spec:
               value: "0.0.0.0"
             - name: PORT
               value: "8000"
+            - name: N_CPUS
+              value: {{ .Values.cpus }}
           volumeMounts:
             - mountPath: /models
               name: llm-models
@@ -53,8 +68,8 @@ spec:
           ports:
             - containerPort: 80
           env:
-            - name: LLM_MODEL
-              value: "model"
+            - name: LLM_MODEL            
+              value: "model" # This is only present for checking, whether a model is loaded, and is sufficient. 
             - {
                 name: AUTH_TOKEN,
                 valueFrom:
