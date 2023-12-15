@@ -2,13 +2,14 @@ apiVersion: autoscaling/v2beta2
 kind: HorizontalPodAutoscaler
 metadata:
   name: llm-{{ .Values.modelName }}-{{ .Values.target }}-scaler
+  namespace: rse
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
     name: llm-{{ .Values.modelName }}-{{ .Values.target }}
   minReplicas: 1
-  maxReplicas: { { .Values.maxreplicas } }
+  maxReplicas: {{ .Values.maxreplicas }}
   metrics:
     - type: Resource
       resource:
