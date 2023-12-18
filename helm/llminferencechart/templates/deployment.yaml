@@ -58,7 +58,7 @@ spec:
             - name: PORT
               value: "8000"
             - name: N_CPUS
-              value: {{ .Values.cpus }}
+              value: "{{ .Values.cpus }}"
           volumeMounts:
             - mountPath: /models
               name: llm-models
