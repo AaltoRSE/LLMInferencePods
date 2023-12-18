@@ -1,7 +1,7 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: llm-ingress
+  name: llm-ingress-{{ .Values.modelName }}
   namespace:
     rse # Everything we do will be in the "rse" namespace,
     # which logically separates different uses (like with
