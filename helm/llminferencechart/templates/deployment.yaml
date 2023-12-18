@@ -18,6 +18,12 @@ spec:
         app.kubernetes.io/name: llm-{{ .Values.modelName }}
         app.kubernetes.io/component: server
     spec:
+      {{- if eq .Values.target "Gpu" }}  
+      tolerations:
+        - key: "cs-aalto/gpu"
+          operator: Exists
+          effect: NoSchedule
+      {{- end }}
       nodeSelector:
         kubernetes.io/hostname: {{- if eq .Values.target "cpu" }}  
                                 k8s-node21.cs.aalto.fi 
