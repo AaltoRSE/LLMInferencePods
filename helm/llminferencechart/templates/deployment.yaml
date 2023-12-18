@@ -37,7 +37,7 @@ spec:
 
       containers:
         - name: llm-{{ .Values.modelName }}-{{ .Values.target }}-cont
-          image: harbor.cs.aalto.fi/aaltorse-public/llm_llama2-{{ .Values.target }}:latest
+          image: harbor.cs.aalto.fi/aaltorse-public/llm_llama2_{{ .Values.target }}:latest
           ports:
             - containerPort: 8000
 
