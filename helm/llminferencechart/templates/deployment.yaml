@@ -51,7 +51,7 @@ spec:
               cpu: {{ .Values.cpus }}
           env:
             - name: MODEL
-              value: /models/{{ .Values.modelPath }}
+              value: {{ .Values.modelPath }}
             - name: HOST
               value: "0.0.0.0"
             - name: PORT
