@@ -1,10 +1,10 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: llm-{{ .Values.modelName }}-{{ .Values.target }}-svc
+  name: llm-{{ .Values.modelName }}-svc
   namespace: rse
   labels:
-    app.kubernetes.io/name: llm-{{ .Values.modelName }}-{{ .Values.target }}-svc
+    app.kubernetes.io/name: llm-{{ .Values.modelName }}-svc
     app.kubernetes.io/component: server
 spec:
   ports:
@@ -13,4 +13,4 @@ spec:
       targetPort: 80
       protocol: TCP
   selector:
-    app.kubernetes.io/name: llm-{{ .Values.modelName }}-svc
+    app.kubernetes.io/name: llm-{{ .Values.modelName }}
