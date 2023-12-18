@@ -18,7 +18,7 @@ spec:
         app.kubernetes.io/name: llm-{{ .Values.modelName }}
         app.kubernetes.io/component: server
     spec:
-      {{- if eq .Values.target "Gpu" }}  
+      {{- if eq .Values.target "gpu" }}  
       tolerations:
         - key: "cs-aalto/gpu"
           operator: Exists
