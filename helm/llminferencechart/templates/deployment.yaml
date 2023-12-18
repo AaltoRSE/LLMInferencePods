@@ -20,7 +20,7 @@ spec:
         app.kubernetes.io/component: server
     spec:
       nodeSelector:
-        kubernetes.io/hostname: {{- if eq .Values.target "gpu" }}  
+        kubernetes.io/hostname: {{- if eq .Values.target "cpu" }}  
                                 k8s-node21.cs.aalto.fi 
                                 {{- else }}  
                                 k8s-gpu.cs.aalto.fi

@@ -1,0 +1,5 @@
+modelName: "llama2-7B-chat"
+modelPath: "llama2/llama2-7b-chat/ggml-model-f16-v2.gguf"
+target: "gpu"
+maxreplicas: 3
+cpus: 12
