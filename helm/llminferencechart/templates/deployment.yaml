@@ -7,8 +7,7 @@ metadata:
     app.kubernetes.io/name: llm-{{ .Values.modelName }}-{{ .Values.target }}
     app.kubernetes.io/component: server
 # The definition of the service itself
-spec:
-  replicas: 1
+spec:  
   selector:
     matchLabels:
       app.kubernetes.io/name: llm-{{ .Values.modelName }}
@@ -16,7 +15,7 @@ spec:
   template:
     metadata:
       labels:
-        app.kubernetes.io/name: llm-{{ .Values.modelName }}-{{ .Values.target }}
+        app.kubernetes.io/name: llm-{{ .Values.modelName }}
         app.kubernetes.io/component: server
     spec:
       nodeSelector:
