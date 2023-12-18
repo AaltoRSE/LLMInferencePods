@@ -1,5 +1,5 @@
 modelName: "llama2-13b-chat"
-modelPath: "llama2/llama2-13b-chat/ggml-model-f16-v2.gguf"
+modelPath: "llama-2/llama-2-13b-chat/ggml-model-f16-v2.gguf"
 target: "cpu"
 maxreplicas: 2
 cpus: 24
