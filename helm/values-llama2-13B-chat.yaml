@@ -1,4 +1,4 @@
-modelName: "llama2-13B-chat"
+modelName: "llama2-13b-chat"
 modelPath: "llama2/llama2-13b-chat/ggml-model-f16-v2.gguf"
 target: "cpu"
 maxreplicas: 2

@@ -1,4 +1,4 @@
-modelName: "llama2-7B-chat"
+modelName: "llama2-7b-chat"
 modelPath: "llama2/llama2-7b-chat/ggml-model-f16-v2.gguf"
 target: "gpu"
 maxreplicas: 3
