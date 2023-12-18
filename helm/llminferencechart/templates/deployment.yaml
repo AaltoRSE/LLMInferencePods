@@ -33,7 +33,7 @@ spec:
       volumes:
         - name: llm-models
           hostPath:
-            path: /srv/models/
+            path: /srv/dldata
             type: Directory
 
       containers:

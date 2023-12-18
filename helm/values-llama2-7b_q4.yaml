@@ -1,4 +1,4 @@
-modelName: llama2-7b_q4
+modelName: llama2-7b_q4-chat
 modelPath: llama-2-7b-chat.gguf.q4_0.bin
 target: "cpu"
 maxreplicas: 1
