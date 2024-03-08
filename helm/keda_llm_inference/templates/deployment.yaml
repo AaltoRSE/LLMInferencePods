@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: llm-{{ .Values.modelName }}-{{ .Values.target }}
+  name: llm-keda-{{ .Values.modelName }}-{{ .Values.target }}
   namespace: rse
   labels:
     app.kubernetes.io/name: llm-keda-{{ .Values.modelName }}-{{ .Values.target }}
