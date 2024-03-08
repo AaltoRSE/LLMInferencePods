@@ -21,6 +21,8 @@ metadata:
     # Rewrite request for target pod
     nginx.ingress.kubernetes.io/use-regex: "true"
     nginx.ingress.kubernetes.io/rewrite-target: /$2
+    # Restrict access to Aalto IPs
+    nginx.ingress.kubernetes.io/whitelist-source-range: 130.233.0.0/16
 # Spec tells the actual parameters: hosts to listen on, path prefixes.
 spec:
   tls:
