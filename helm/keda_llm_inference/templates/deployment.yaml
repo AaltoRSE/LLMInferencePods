@@ -1,0 +1,87 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: llm-{{ .Values.modelName }}-{{ .Values.target }}
+  namespace: rse
+  labels:
+    app.kubernetes.io/name: llm-keda-{{ .Values.modelName }}-{{ .Values.target }}
+    app.kubernetes.io/component: server
+# The definition of the service itself
+spec:  
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: llm-keda-{{ .Values.modelName }}
+      app.kubernetes.io/component: server
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: llm-keda-{{ .Values.modelName }}
+        app.kubernetes.io/component: server
+    spec:
+      {{- if eq .Values.target "gpu" }}  
+      tolerations:
+        - key: "cs-aalto/gpu"
+          operator: Exists
+          effect: NoSchedule
+      {{- end }}
+      nodeSelector:
+        kubernetes.io/hostname: {{- if eq .Values.target "cpu" }}  
+                                k8s-node21.cs.aalto.fi 
+                                {{- else }}  
+                                k8s-gpu.cs.aalto.fi
+                                {{- end }}
+      restartPolicy: Always
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+      volumes:
+        - name: llm-models
+          hostPath:
+            path: /srv/dldata
+            type: Directory
+
+      containers:
+        - name: llm-keda-{{ .Values.modelName }}-{{ .Values.target }}-cont
+          image: harbor.cs.aalto.fi/aaltorse-public/llm_llama2_{{ .Values.target }}:latest
+          ports:
+            - containerPort: 8000
+
+          resources: # Restrict to one GPU
+            requests:              
+              cpu: "250m"
+            limits: # For GPUs, this will block a full GPU for this model (probably shouldn't deploy more than one instance)... 
+              {{- if eq .Values.target "gpu" }}
+              nvidia.com/gpu: 1
+              {{- end}}
+              cpu: {{ .Values.cpus }}
+          env:
+            - name: MODEL
+              value: {{ .Values.modelPath }}
+            - name: HOST
+              value: "0.0.0.0"
+            - name: PORT
+              value: "8000"
+            - name: N_CPUS
+              value: "{{ .Values.cpus }}"
+          volumeMounts:
+            - mountPath: /models
+              name: llm-models
+              readOnly: true
+        - name: llm-keda-nginx-cont
+          image: harbor.cs.aalto.fi/aaltorse-public/llm_nginx:latest
+          ports:
+            - containerPort: 80
+          env:
+            - name: LLM_MODEL            
+              value: "model" # This is only present for checking, whether a model is loaded, and is sufficient. 
+            - {
+                name: AUTH_TOKEN,
+                valueFrom:
+                  { secretKeyRef: { name: llm-gateway, key: inference_key } },
+              }
+
+          securityContext:
+            runAsUser: 0
+            runAsGroup: 0
+            allowPrivilegeEscalation: false
