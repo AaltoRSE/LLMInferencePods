@@ -17,4 +17,4 @@ spec:
     targetPendingRequests: 3
     replicas:
         min: 1
-        max: { { .Values.maxreplicas } }
+        max: {{ .Values.maxreplicas }}
