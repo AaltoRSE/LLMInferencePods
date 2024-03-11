@@ -69,7 +69,7 @@ spec:
               name: llm-models
               readOnly: true
         - name: llm-keda-nginx-cont
-          image: harbor.cs.aalto.fi/aaltorse-public/llm_nginx:latest
+          image: harbor.cs.aalto.fi/aaltorse-public/llm_nginx:keda
           ports:
             - containerPort: 80
           env:
