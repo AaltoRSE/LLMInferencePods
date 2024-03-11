@@ -20,6 +20,8 @@ metadata:
     nginx.ingress.kubernetes.io/proxy-send-timeout: "300"
     # Restrict access to Aalto IPs
     nginx.ingress.kubernetes.io/whitelist-source-range: 130.233.0.0/16
+    # Test, whether this is necessary for keda
+    nginx.ingress.kubernetes.io/rewrite-target: /
 # Spec tells the actual parameters: hosts to listen on, path prefixes.
 spec:
   tls:
@@ -37,6 +39,6 @@ spec:
             # the service defined below (matching the name).
             backend:
               service:
-                name: keda-llm-proxy  
+                name: keda-llm-proxy
                 port:
                   number: 80

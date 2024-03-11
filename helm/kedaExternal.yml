@@ -2,7 +2,7 @@ apiVersion: v1
 kind: Service
 metadata:
   namespace: rse
-  name: keda-llm-proxy  
+  name: keda-llm-proxy
 spec:
   type: ExternalName
-  externalName: keda-http-add-on-interceptor-proxy.keda
+  externalName: keda-http-add-on-interceptor-proxy.keda.svc
