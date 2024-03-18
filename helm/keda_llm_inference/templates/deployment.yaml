@@ -64,6 +64,8 @@ spec:
               value: "8000"
             - name: N_CPUS
               value: "{{ .Values.cpus }}"
+            - name: CHATFORMAT
+              value: "{{ .Values.chatformat }}"
           volumeMounts:
             - mountPath: /models
               name: llm-models

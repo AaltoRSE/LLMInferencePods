@@ -8,4 +8,4 @@ dependencies:
   - python=3.9
   - pip
   - pip:
-      - llama-cpp-python[server]
+      - llama-cpp-python[server]=0.2.56
