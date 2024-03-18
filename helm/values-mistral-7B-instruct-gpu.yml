@@ -1,6 +1,6 @@
 modelName: "mistral-7b-instruct"
 modelPath: "Mistral-7B-Instruct-v0.2/ggml-model-f16-v2.gguf"
 target: "gpu"
-maxreplicas: 2
+maxreplicas: 3
 cpus: 12
 chatformat: "mistral-instruct"

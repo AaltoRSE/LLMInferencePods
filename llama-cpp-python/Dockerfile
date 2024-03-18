@@ -12,7 +12,7 @@ RUN apt-get update && apt-get upgrade -y && apt-get install -y --no-install-reco
 
 RUN pip install mkl
 
-RUN CMAKE_ARGS="-DLLAMA_AVX2=ON -DLLAMA_AVX2=ON -DLLAMA_FMA=ON" FORCE_CMAKE=1 pip install llama-cpp-python[server]
+RUN CMAKE_ARGS="-DLLAMA_AVX2=ON -DLLAMA_AVX2=ON -DLLAMA_FMA=ON" FORCE_CMAKE=1 pip install llama-cpp-python[server]==0.2.56
 
 ENV HOST="localhost" \
     PORT="8000" \        
