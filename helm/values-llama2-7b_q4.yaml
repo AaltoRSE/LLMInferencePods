@@ -3,3 +3,4 @@ modelPath: llama-2-7b-chat.gguf.q4_0.bin
 target: "cpu"
 maxreplicas: 1
 cpus: 12
+chatformat: "llama-2"

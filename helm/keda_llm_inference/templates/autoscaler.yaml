@@ -1,18 +1,20 @@
 kind: HTTPScaledObject
 apiVersion: http.keda.sh/v1alpha1
 metadata:
-    name: llm-keda-{{ .Values.modelName }}-{{ .Values.target }}-scaler
+    name: llm-{{ .Values.modelName }}-{{ .Values.target }}-scaler
 spec:
     hosts:
-        - llm-keda.k8s-test.cs.aalto.fi
+        - llm.k8s-test.cs.aalto.fi
     pathPrefixes:
         - /{{ .Values.modelName }}
     scaleTargetRef:
-        name: llm-keda-{{ .Values.modelName }}-{{ .Values.target }}
+        name: llm-{{ .Values.modelName }}-{{ .Values.target }}
         kind: Deployment
         apiVersion: apps/v1
-        service: llm-keda-{{ .Values.modelName }}-svc
+        service: llm-{{ .Values.modelName }}-svc
         port: 80
+    # More than 3 pending requests should trigger an upscale, as requests can take a few seconds
+    targetPendingRequests: 3
     replicas:
         min: 1
         max: {{ .Values.maxreplicas }}
