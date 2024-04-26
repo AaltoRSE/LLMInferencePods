@@ -43,7 +43,8 @@ spec:
 
       containers:
         - name: llm-{{ .Values.modelName }}-{{ .Values.target }}-cont
-          image: harbor.cs.aalto.fi/aaltorse-public/llm_llama2_{{ .Values.target }}:latest
+          # Introducing versioninig according to llama.cpp-python version
+          image: harbor.cs.aalto.fi/aaltorse-public/llmcpp_{{ .Values.target }}:0.2.64
           ports:
             - containerPort: 8000
 
