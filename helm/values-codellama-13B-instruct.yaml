@@ -2,5 +2,6 @@ modelName: "codellama-13b-instruct"
 modelPath: "codellama/CodeLlama-13b-Instruct/ggml-model-f16-v2.gguf"
 target: "cpu"
 maxreplicas: 3
+minreplicas: 1
 cpus: 24
 chatformat: "llama-2"
