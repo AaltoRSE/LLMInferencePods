@@ -16,5 +16,5 @@ spec:
     # More than 3 pending requests should trigger an upscale, as requests can take a few seconds
     targetPendingRequests: 3
     replicas:
-        min: { { .Values.minreplicas } }
-        max: { { .Values.maxreplicas } }
+        min: {{ .Values.minreplicas }}
+        max: {{ .Values.maxreplicas }}
