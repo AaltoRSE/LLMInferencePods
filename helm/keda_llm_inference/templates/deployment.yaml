@@ -42,9 +42,8 @@ spec:
             type: Directory
 
       containers:
-        - name: llm-{{ .Values.modelName }}-{{ .Values.target }}-cont
-          # Introducing versioninig according to llama.cpp-python version
-          image: harbor.cs.aalto.fi/aaltorse-public/llmcpp_{{ .Values.target }}:0.2.64
+        - name: llm-{{ .Values.modelName }}-{{ .Values.target }}-cont          
+          image: harbor.cs.aalto.fi/aaltorse-public/llm_llamacpp_{{ .Values.target }}:latest
           ports:
             - containerPort: 8000
 

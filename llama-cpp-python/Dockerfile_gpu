@@ -10,7 +10,9 @@ RUN apt-get update && apt-get upgrade -y && apt-get install -y --no-install-reco
     build-essential \
     pkg-config
 
-RUN CMAKE_ARGS="-DLLAMA_CUBLAS=on" FORCE_CMAKE=1 pip install llama-cpp-python[server]==0.2.64
+ARG llama_cpp_version
+
+RUN CMAKE_ARGS="-DLLAMA_CUBLAS=on" FORCE_CMAKE=1 pip install llama-cpp-python[server]==$llama_cpp_version
 
 ENV HOST="localhost" \
     PORT="8000" \        
