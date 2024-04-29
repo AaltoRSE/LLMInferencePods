@@ -72,6 +72,14 @@ spec:
               readOnly: true
         - name: llm-nginx-cont
           image: harbor.cs.aalto.fi/aaltorse-public/llm_nginx:keda
+          readinessProbe:
+            httpGet:
+              path: /alive
+              port: 80
+            initialDelaySeconds: 1
+            periodSeconds: 3
+            timeoutSeconds: 5
+            failureThreshold: 10
           ports:
             - containerPort: 80
           env:
@@ -81,8 +89,7 @@ spec:
                 name: AUTH_TOKEN,
                 valueFrom:
                   { secretKeyRef: { name: llm-gateway, key: inference_key } },
-              }
-
+              }          
           securityContext:
             runAsUser: 0
             runAsGroup: 0
