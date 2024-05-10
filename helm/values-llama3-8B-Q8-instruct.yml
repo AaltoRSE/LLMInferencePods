@@ -1,0 +1,8 @@
+modelName: "llama3-8b-q8-instruct"
+modelPath: "QuantFactory--Meta-Llama-3-8B-Instruct-GGUF/Meta-Llama-3-8B-Instruct.Q8_0.gguf"
+target: "gpu"
+maxreplicas: 2
+minreplicas: 0
+cpus: 12
+chatformat: "llama-3"
+n_ctx: 8192
