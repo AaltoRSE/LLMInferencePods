@@ -14,9 +14,11 @@ ARG llama_cpp_version
 
 RUN CMAKE_ARGS="-DLLAMA_CUBLAS=on" FORCE_CMAKE=1 pip install llama-cpp-python[server]==$llama_cpp_version
 
+# We set some default values, but those could be overwritten
 ENV HOST="localhost" \
     PORT="8000" \        
-    CHATFORMAT="chatml"
+    CHATFORMAT="chatml" \
+    N_CTX="2048"
 
 WORKDIR /app
 

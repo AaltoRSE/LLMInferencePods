@@ -66,6 +66,8 @@ spec:
               value: "{{ .Values.cpus }}"
             - name: CHATFORMAT
               value: "{{ .Values.chatformat }}"
+            - name: N_CTX
+              value: "{{ .Values.n_ctx | default 2048 }}"
           volumeMounts:
             - mountPath: /models
               name: llm-models
