@@ -4,7 +4,7 @@ metadata:
     name: llm-{{ .Values.modelName }}-{{ .Values.target }}-scaler
 spec:
     hosts:
-        - llm.k8s-test.cs.aalto.fi
+        - llm.k8s.aalto.fi
     pathPrefixes:
         - /{{ .Values.modelName }}
     scaleTargetRef:

@@ -26,10 +26,10 @@ metadata:
 spec:
   tls:
     - hosts:
-        - llm.k8s-test.cs.aalto.fi
+        - llm.k8s.aalto.fi
       secretName: llm-keda-fastchat-deployment
   rules:
-    - host: llm.k8s-test.cs.aalto.fi
+    - host: llm.k8s.aalto.fi
       http:
         paths:
           - path: /
