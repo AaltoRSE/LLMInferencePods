@@ -18,14 +18,14 @@ spec:
         app.kubernetes.io/name: llm-{{ .Values.modelName }}
         app.kubernetes.io/component: server
     spec:
-      {{- if eq .Values.target "gpu" }}  
+      {{- if ne .Values.target "cpu" }}  
       tolerations:
         - key: "cs-aalto/gpu"
           operator: Exists
           effect: NoSchedule
       {{- end }}
       nodeSelector:
-        kubernetes.io/hostname: {{- if eq .Values.target "gpu" }}  
+        kubernetes.io/hostname: {{- if ne .Values.target "cpu" }}  
                                 k8s-gpu.cs.aalto.fi
                                 {{- else }}  
                                 k8s-node21.cs.aalto.fi                                 
@@ -51,7 +51,7 @@ spec:
             requests:              
               cpu: "250m"
             limits: # For GPUs, this will block a full GPU for this model (probably shouldn't deploy more than one instance)... 
-              {{- if eq .Values.target "gpu" }}
+              {{- if ne .Values.target "cpu" }}
               nvidia.com/gpu: 1
               {{- end}}
               cpu: {{ .Values.cpus }}
