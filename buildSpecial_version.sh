@@ -4,7 +4,5 @@
 cd llama-cpp-python
 docker build --file ./Dockerfile_gpu -t harbor.cs.aalto.fi/aaltorse-public/llm_llamacpp_$1 .
 docker push harbor.cs.aalto.fi/aaltorse-public/llm_llamacpp_$1
-docker build --file ./Dockerfile -t harbor.cs.aalto.fi/aaltorse-public/llm_llamacpp_$1 .
-docker push harbor.cs.aalto.fi/aaltorse-public/llm_llamacpp_$1
 cd -
 
