@@ -1,18 +1,28 @@
 # Use the image as specified
-FROM nvidia/cuda:12.2.2-devel-ubuntu22.04 
+FROM nvidia/cuda:12.5.0-devel-ubuntu22.04 
 
 # Update and upgrade the existing packages 
 RUN apt-get update && apt-get upgrade -y && apt-get install -y --no-install-recommends \
-    python3 \
-    python3-pip \
-    ninja-build \
-    libopenblas-dev \
-    build-essential \
-    pkg-config
+    git build-essential \
+    python3 python3-pip gcc wget \
+    ocl-icd-opencl-dev opencl-headers clinfo \
+    libclblast-dev libopenblas-dev \
+    ninja-build \        
+    pkg-config \
+    git \
+    && mkdir -p /etc/OpenCL/vendors && echo "libnvidia-opencl.so.1" > /etc/OpenCL/vendors/nvidia.icd
 
-ARG llama_cpp_version
+ENV CUDA_DOCKER_ARCH=all
+ENV GGML_CUDA=1
 
-RUN CMAKE_ARGS="-DLLAMA_CUBLAS=on" FORCE_CMAKE=1 pip install llama-cpp-python[server]==$llama_cpp_version
+# Install requisites
+RUN python3 -m pip install --upgrade pip pytest cmake scikit-build setuptools fastapi uvicorn sse-starlette pydantic-settings starlette-context
+
+WORKDIR /llama_cpp
+
+RUN git clone https://github.com/tpfau/llama-cpp-python.git && cd llama-cpp-python && git checkout stream_testing && git submodule init && git submodule update
+
+RUN CMAKE_ARGS="-DLLAMA_CUBLAS=on -DGGML_CUDA=on" pip install /llama_cpp/llama-cpp-python[server]
 
 # We set some default values, but those could be overwritten
 ENV HOST="localhost" \
