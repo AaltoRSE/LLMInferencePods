@@ -22,7 +22,7 @@ WORKDIR /llama_cpp
 
 RUN git clone https://github.com/tpfau/llama-cpp-python.git && cd llama-cpp-python && git checkout stream_testing && git submodule init && git submodule update
 
-RUN CMAKE_ARGS="-DLLAMA_CUBLAS=on -DGGML_CUDA=on" pip install /llama_cpp/llama-cpp-python[server]
+RUN CMAKE_ARGS="-DGGML_CUDA=on" pip install /llama_cpp/llama-cpp-python[server]
 
 # We set some default values, but those could be overwritten
 ENV HOST="localhost" \
