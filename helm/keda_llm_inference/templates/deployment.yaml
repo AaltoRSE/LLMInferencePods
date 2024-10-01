@@ -25,10 +25,10 @@ spec:
           effect: NoSchedule
       {{- end }}
       nodeSelector:
-        kubernetes.io/hostname: {{- if eq .Values.target "cpu" }}  
-                                k8s-node21.cs.aalto.fi 
-                                {{- else }}  
+        kubernetes.io/hostname: {{- if eq .Values.target "gpu" }}  
                                 k8s-gpu.cs.aalto.fi
+                                {{- else }}  
+                                k8s-node21.cs.aalto.fi                                 
                                 {{- end }}
       restartPolicy: Always
       securityContext:
