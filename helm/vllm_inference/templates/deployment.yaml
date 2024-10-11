@@ -44,6 +44,9 @@ spec:
             # Remove when actually deploying
             - name: HUGGING_FACE_HUB_TOKEN
               value: "{{ .Values.HF_TOKEN}}"
+            # Need to unset, so that it doesn't use more than those allocated, maybe this is sufficient 
+            - name: NVIDIA_VISIBLE_DEVICES
+              value: ""
             # Deactivated for testing purposes
             #- name: TRANSFORMERS_OFFLINE 
             #  value: '1'
