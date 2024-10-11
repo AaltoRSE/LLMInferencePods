@@ -55,13 +55,16 @@ spec:
             - name: VLLM_API_KEY
               valueFrom:
                   { secretKeyRef: { name: llm-gateway, key: inference_key } }
-          args:            
-            - "--model"
-            - "{{ .Values.modelPath }}"
-            - "--root-path"
-            - "{{ .Values.modelName }}"
-            - "--api-key"
-            - "${VLLM_API_KEY}"
+          command: [
+            "/bin/bash",
+            "-c",
+            "--model",
+            "{{ .Values.modelPath }}",
+            "--root-path",
+            "{{ .Values.modelName }}",
+            "--api-key",
+            "$VLLM_API_KEY"
+          ]          
           volumeMounts:
             - mountPath: /container-home/
               name: llm-{{ .Values.modelName }}-{{ .Values.target }}-pvc
