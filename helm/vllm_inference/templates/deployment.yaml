@@ -55,8 +55,7 @@ spec:
             - name: VLLM_API_KEY
               valueFrom:
                   { secretKeyRef: { name: llm-gateway, key: inference_key } }
-          command:            
-            - ["/bin/bash", "-c"]
+          command: ["/bin/bash", "-c"]
           args:
             - python3
             - -m
