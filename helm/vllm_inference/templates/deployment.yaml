@@ -40,7 +40,7 @@ spec:
               cpu: {{ .Values.cpus }}
           env:
             - name: HF_HOME
-              value: "/hf-home"
+              value: "/container-home/huggingface"
             # Remove when actually deploying
             - name: HUGGING_FACE_HUB_TOKEN
               value: "{{ .Values.HF_TOKEN}}"
@@ -50,6 +50,8 @@ spec:
             # Deactivated for testing purposes
             #- name: TRANSFORMERS_OFFLINE 
             #  value: '1'
+            - name: VLLM_CONFIG_ROOT
+              value: "/container-home/config"
             - name: VLLM_API_KEY
               valueFrom:
                   { secretKeyRef: { name: llm-gateway, key: inference_key } }
@@ -59,7 +61,7 @@ spec:
             - "--root_path"
             - "{{ .Values.modelName }}"
           volumeMounts:
-            - mountPath: /hf-home
+            - mountPath: /container-home/
               name: llm-{{ .Values.modelName }}-{{ .Values.target }}-pvc
           readinessProbe:
             httpGet:
