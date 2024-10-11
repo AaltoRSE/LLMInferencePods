@@ -35,8 +35,8 @@ spec:
           resources: # Restrict to one GPU
             requests:              
               cpu: "250m"
-              nvidia.com/gpu: {{ .Values.gpus}} 
             limits:             
+              nvidia.com/gpu: {{ .Values.gpus}} 
               cpu: {{ .Values.cpus }}
           env:
             - name: HF_HOME
