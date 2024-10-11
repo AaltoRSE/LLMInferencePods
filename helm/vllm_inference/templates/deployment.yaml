@@ -61,7 +61,7 @@ spec:
             - "--root-path"
             - "{{ .Values.modelName }}"
             - "--api-key"
-            - "$VLLM_API_KEY"
+            - "${VLLM_API_KEY}"
           volumeMounts:
             - mountPath: /container-home/
               name: llm-{{ .Values.modelName }}-{{ .Values.target }}-pvc
