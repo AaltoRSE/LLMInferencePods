@@ -8,9 +8,10 @@ metadata:
     app.kubernetes.io/component: server
 spec:
   ports:
-    - name: http
+    - protocol: TCP
       port: 80
       targetPort: 8000
-      protocol: TCP
+      
   selector:
     app.kubernetes.io/name: llm-{{ .Values.modelName }}
+    
