@@ -55,19 +55,14 @@ spec:
             - name: VLLM_API_KEY
               valueFrom:
                   { secretKeyRef: { name: llm-gateway, key: inference_key } }
-          command: [
-            "/bin/bash",
-            "-c",
-            "python3",
-            "-m",
-            "vllm.entrypoints.openai.api_server",
-            "--model",
-            "{{ .Values.modelPath }}",
-            "--root-path",
-            "{{ .Values.modelName }}",
-            "--api-key",
-            "$VLLM_API_KEY"
-          ]          
+          command:
+            - python3
+            - -m
+            - vllm.entrypoints.openai.api_server
+            - --model
+            - {{ .Values.modelPath }}
+            - --root-path={{ .Values.modelName }}
+            - --api-key=$VLLM_API_KEY
           volumeMounts:
             - mountPath: /container-home/
               name: llm-{{ .Values.modelName }}-{{ .Values.target }}-pvc
