@@ -58,6 +58,9 @@ spec:
           command: [
             "/bin/bash",
             "-c",
+            "python3",
+            "-m",
+            "vllm.entrypoints.openai.api_server",
             "--model",
             "{{ .Values.modelPath }}",
             "--root-path",
