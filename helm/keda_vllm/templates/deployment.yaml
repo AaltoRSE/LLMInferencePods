@@ -49,7 +49,7 @@ spec:
                   { secretKeyRef: { name: llm-gateway, key: inference_key } }
           args:            
             - "--model"
-            - "{{ .Values.modelName }}"
+            - "{{ .Values.modelPath }}"
             - "--root_path"
             - "{{ .Values.modelName }}"
           volumeMounts:
