@@ -58,15 +58,15 @@ spec:
           args:            
             - "--model"
             - "{{ .Values.modelPath }}"
-            - "--root_path"
+            - "--root-path"
             - "{{ .Values.modelName }}"
           volumeMounts:
             - mountPath: /container-home/
               name: llm-{{ .Values.modelName }}-{{ .Values.target }}-pvc
           readinessProbe:
             httpGet:
-              path: /health
-              port: 80
+              path: /{{ .Values.modelName }}/health
+              port: 8000
             initialDelaySeconds: 10
             periodSeconds: 20
             timeoutSeconds: 10
