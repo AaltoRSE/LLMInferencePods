@@ -1,0 +1,21 @@
+kind: HTTPScaledObject
+apiVersion: http.keda.sh/v1alpha1
+metadata:
+    name: llm-{{ .Values.modelName }}-{{ .Values.target }}-scaler
+    namespace: {{ .Values.namespace}}
+spec:
+    hosts:
+        - ai-model.k8s.aalto.fi
+    pathPrefixes:
+        - /{{ .Values.modelName }}
+    scaleTargetRef:
+        name: llm-{{ .Values.modelName }}-{{ .Values.target }}
+        kind: Deployment
+        apiVersion: apps/v1
+        service: llm-{{ .Values.modelName }}-svc
+        port: 80
+    # More than 3 pending requests should trigger an upscale, as requests can take a few seconds
+    targetPendingRequests: 5
+    replicas:
+        min: {{ .Values.minreplicas }}
+        max: {{ .Values.maxreplicas }}

@@ -1,0 +1,87 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: llm-{{ .Values.modelName }}-{{ .Values.target }}
+  namespace: {{ .Values.namespace}}
+  labels:
+    app.kubernetes.io/name: llm-{{ .Values.modelName }}-{{ .Values.target }}
+    app.kubernetes.io/component: server
+# The definition of the service itself
+spec:  
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: llm-{{ .Values.modelName }}
+      app.kubernetes.io/component: server
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: llm-{{ .Values.modelName }}
+        app.kubernetes.io/component: server
+    spec:            
+      restartPolicy: Always
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+      volumes:
+        - name: llm-{{ .Values.modelName }}-{{ .Values.target }}-pvc
+          #TODO: This needs to be a folder that is structured like HF_HUB
+
+      containers:
+        - name: llm-{{ .Values.modelName }}-{{ .Values.target }}-cont          
+          image: vllm/vllm-openai:{{ .Values.vllm_version }}
+          ports:
+            - containerPort: 8000  
+          resources: # Restrict to one GPU
+            requests:              
+              cpu: "250m"
+              nvidia.com/gpu: {{ Values.gpus}}              
+              cpu: {{ .Values.cpus }}
+          env:
+            - name: HF_HOME
+              value: "/hf-home"
+            - name: HUGGING_FACE_HUB_TOKEN
+              value: "{{ .Values.HF_TOKEN}}"
+            - name: TRANSFORMERS_OFFLINE 
+              value: '1'
+            - name: VLLM_API_KEY
+              valueFrom:
+                  { secretKeyRef: { name: llm-gateway, key: inference_key } }
+          args:            
+            - "--model"
+            - "{{ .Values.modelName }}"
+            - "--root_path"
+            - "{{ .Values.modelName }}"
+          volumeMounts:
+            - mountPath: /hf-home
+              name: llm-{{ .Values.modelName }}-{{ .Values.target }}-pvc
+              readOnly: true
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 80
+            initialDelaySeconds: 10
+            periodSeconds: 20
+            timeoutSeconds: 10
+            failureThreshold: 10
+        
+
+
+# Persistent volume claim for testing
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: llm-{{ .Values.modelName }}-{{ .Values.target }}-pvc
+  namespace: {{ .Values.namespace }}
+spec:
+  accessModes: 
+    - ReadWriteMany # We need to be able to access this from multiple pods..
+  resources:
+    requests:
+      # Need to have a look how big this will become.
+      storage: {{ .Values.modelsize }}
+  storageClassName: moodle-nfs-csi
+  volumeMode: Filesystem
+#---
