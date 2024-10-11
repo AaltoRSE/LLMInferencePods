@@ -56,7 +56,6 @@ spec:
           volumeMounts:
             - mountPath: /hf-home
               name: llm-{{ .Values.modelName }}-{{ .Values.target }}-pvc
-              readOnly: true
           readinessProbe:
             httpGet:
               path: /health
