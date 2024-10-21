@@ -1,11 +1,11 @@
 apiVersion: keda.sh/v1alpha1
 kind: ScaledObject
 metadata:
-  name: llm-{{ .Values.modelName }}-{{ .Values.target }}-scaledobject
+  name: llm-{{ .Values.modelPath }}-{{ .Values.target }}-scaledobject
   namespace: {{ .Values.namespace }}
 spec:
   scaleTargetRef:
-    name: llm-{{ .Values.modelName }}-{{ .Values.target }}
+    name: llm-{{ .Values.modelPath }}-{{ .Values.target }}
     kind: Deployment
     apiVersion: apps/v1
   minReplicaCount: 1
@@ -19,7 +19,7 @@ spec:
         metricName: DCGM_FI_DEV_GPU_UTIL
         threshold: "0.75"
         query: |
-          avg_over_time(DCGM_FI_DEV_GPU_UTIL{container="llm-{{ .Values.modelName }}-{{ .Values.target }}-cont"}[60s])
+          avg_over_time(DCGM_FI_DEV_GPU_UTIL{container="llm-{{ .Values.modelPath }}-{{ .Values.target }}-cont"}[60s])
 
 
 # apiVersion: autoscaling/v2
