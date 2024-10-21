@@ -1,7 +1,7 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: llm-ingress-{{ .Values.modelName }}
+  name: llm-ingress-{{ .Values.modelPath }}
   namespace: {{ .Values.namespace }}
 
   annotations:
@@ -19,10 +19,10 @@ spec:
     - host: {{ .Values.model_base_url }}
       http:
         paths:
-          - path: /{{ .Values.modelName }}/
+          - path: /{{ .Values.modelPath }}/
             pathType: Prefix           
             backend:
               service:
-                name: llm-{{ .Values.modelName }}-svc
+                name: llm-{{ .Values.modelPath }}-svc
                 port:
                   number: 80

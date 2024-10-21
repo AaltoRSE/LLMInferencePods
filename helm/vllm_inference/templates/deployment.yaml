@@ -1,21 +1,21 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: llm-{{ .Values.modelName }}-{{ .Values.target }}
+  name: llm-{{ .Values.modelPath }}-{{ .Values.target }}
   namespace: {{ .Values.namespace}}
   labels:
-    app.kubernetes.io/name: llm-{{ .Values.modelName }}-{{ .Values.target }}
+    app.kubernetes.io/name: llm-{{ .Values.modelPath }}-{{ .Values.target }}
     app.kubernetes.io/component: server
 # The definition of the service itself
 spec:  
   selector:
     matchLabels:
-      app.kubernetes.io/name: llm-{{ .Values.modelName }}
+      app.kubernetes.io/name: llm-{{ .Values.modelPath }}
       app.kubernetes.io/component: server
   template:
     metadata:
       labels:
-        app.kubernetes.io/name: llm-{{ .Values.modelName }}
+        app.kubernetes.io/name: llm-{{ .Values.modelPath }}
         app.kubernetes.io/component: server
     spec:            
       restartPolicy: Always
@@ -24,11 +24,11 @@ spec:
         runAsGroup: 1000
         fsGroup: 1000
       volumes:
-        - name: llm-{{ .Values.modelName }}-{{ .Values.target }}-pvc
+        - name: llm-{{ .Values.modelPath }}-{{ .Values.target }}-pvc
           #TODO: This needs to be a folder that is structured like HF_HUB
 
       containers:
-        - name: llm-{{ .Values.modelName }}-{{ .Values.target }}-cont          
+        - name: llm-{{ .Values.modelPath }}-{{ .Values.target }}-cont          
           image: vllm/vllm-openai:{{ .Values.vllm_version }}
           ports:
             - containerPort: 8000  
@@ -57,14 +57,14 @@ spec:
                   { secretKeyRef: { name: llm-gateway, key: inference_key } }
           args:
             - --model
-            - {{ .Values.modelPath }}            
-            - --root-path=/{{ .Values.modelName }}            
+            - {{ .Values.modelName }}            
+            - --root-path=/{{ .Values.modelPath }}            
           volumeMounts:
             - mountPath: /container-home/
-              name: llm-{{ .Values.modelName }}-{{ .Values.target }}-pvc
+              name: llm-{{ .Values.modelPath }}-{{ .Values.target }}-pvc
           readinessProbe:
             httpGet:
-              path: /{{ .Values.modelName }}/health
+              path: /{{ .Values.modelPath }}/health
               port: 8000
             initialDelaySeconds: 10
             periodSeconds: 20
@@ -79,7 +79,7 @@ spec:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: llm-{{ .Values.modelName }}-{{ .Values.target }}-pvc
+  name: llm-{{ .Values.modelPath }}-{{ .Values.target }}-pvc
   namespace: {{ .Values.namespace }}
 spec:
   accessModes: 
