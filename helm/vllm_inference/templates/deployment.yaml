@@ -54,6 +54,8 @@ spec:
               value: "/container-home/config"
             - name: VLLM_LOGGING_LEVEL
               value: DEBUG
+            - name: VLLM_TRACE_FUNCTION
+              value: "1"
             - name: VLLM_API_KEY
               valueFrom:
                   { secretKeyRef: { name: llm-gateway, key: inference_key } }
