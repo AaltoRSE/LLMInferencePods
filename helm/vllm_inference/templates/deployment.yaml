@@ -26,7 +26,8 @@ spec:
       volumes:
         - name: llm-{{ .Values.modelPath }}-{{ .Values.target }}-pvc
           #TODO: This needs to be a folder that is structured like HF_HUB
-
+        - name: llm-{{ .Values.modelPath }}-{{ .Values.target }}-cache-pvc
+        
       containers:
         - name: llm-{{ .Values.modelPath }}-{{ .Values.target }}-cont          
           image: vllm/vllm-openai:{{ .Values.vllm_version }}
